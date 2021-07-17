@@ -16,6 +16,7 @@ public class GUI {
     private JButton playButton;
     private JLabel winningLabel;
     private JLabel moveLabel;
+    private JComboBox<String> sizeChoices;
 
 
     public GUI() {
@@ -26,6 +27,7 @@ public class GUI {
         drawNewGameButton();
         drawEditButton();
         drawPlayButton();
+        drawChoicesComboBox();
         closeFrame();
     }
 
@@ -43,7 +45,7 @@ public class GUI {
     public void drawMoveLabel() {
         moveLabel = new JLabel("Moves: " + String.valueOf(Board.getMoves()));
         moveLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-        moveLabel.setBounds(40, 150, 100, 50);
+        moveLabel.setBounds(40, 175, 100, 50);
         frame.add(moveLabel);
     }
 
@@ -53,7 +55,7 @@ public class GUI {
         winningLabel = new JLabel("YOU WON!!!");
         winningLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
         winningLabel.setSize(150, 100);
-        winningLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 65);
+        winningLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 90);
         winningLabel.setVisible(false);
         frame.add(winningLabel);
     }
@@ -67,7 +69,7 @@ public class GUI {
         for (int row = 0; row < Board.getSize(); row++) {
             for (int col = 0; col < Board.getSize(); col++) {
                 tileButtons[row][col] = new JButton(String.valueOf(counter++));
-                tileButtons[row][col].setBounds(40 + squareSize * col, 200 + squareSize * row,
+                tileButtons[row][col].setBounds(40 + squareSize * col, 225 + squareSize * row,
                                                 squareSize, squareSize);
                 setSquareButtonBackgroundCol(row, col);
                 tileButtons[row][col].addActionListener(new PlayButtonActionListener(row, col));
@@ -143,6 +145,60 @@ public class GUI {
             }
         });
         frame.add(playButton);
+    }
+
+
+    // Add choices drop down
+    public void drawChoicesComboBox() {
+        String[] sizeChoicesString = { "3 x 3", "4 x 4", "5 x 5" };
+        sizeChoices = new JComboBox<String>(sizeChoicesString);
+        sizeChoices.setSize(60, 20);
+        sizeChoices.setLocation((frame.getWidth() - sizeChoices.getWidth()) / 2, 75);
+        sizeChoices.setSelectedIndex(0);
+        sizeChoices.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JComboBox<String> cb = (JComboBox<String>) e.getSource();             
+                String sizeString = (String) cb.getSelectedItem();
+                int size;
+                switch (sizeString.charAt(0)) {
+                    case '3':
+                        size = 3;
+                        break;
+                    case '4':
+                        size = 4;
+                        break;
+                    case '5':
+                        size = 5;
+                        break;
+                    default:
+                        size = 3;
+                        break;
+                }
+                
+                // Remove current tile buttons and update the frame GUI
+                for (JButton[] tileButtonsArr : tileButtons) {
+                    for (JButton tileButton : tileButtonsArr) {
+                        frame.remove(tileButton);
+                    }
+                }
+                frame.revalidate();
+                frame.repaint();
+
+                // Generate a new board with new size
+                Board.init(size);
+
+                // Reset and display the number of moves
+                Board.setMoves(0);
+                moveLabel.setText("Moves: " + String.valueOf(Board.getMoves()));
+
+                // Re-add tile buttons with new board size
+                drawTileButtons();
+
+                // Disable winning text button
+                winningLabel.setVisible(false);
+            }
+        });
+        frame.add(sizeChoices);
     }
 
 
