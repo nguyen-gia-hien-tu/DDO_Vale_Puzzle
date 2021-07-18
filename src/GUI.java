@@ -69,6 +69,7 @@ public class GUI {
         for (int row = 0; row < Board.getSize(); row++) {
             for (int col = 0; col < Board.getSize(); col++) {
                 tileButtons[row][col] = new JButton(String.valueOf(counter++));
+                tileButtons[row][col].setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
                 tileButtons[row][col].setBounds(40 + squareSize * col, 225 + squareSize * row,
                                                 squareSize, squareSize);
                 setSquareButtonBackgroundCol(row, col);

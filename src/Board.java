@@ -152,7 +152,7 @@ public class Board {
     }
 
 
-    // Private Auxiliary Functions
+    // Private Auxiliary Function to generate random board
     private static void generateBoard() {
         for (int row = 0; row < Board.size; row++) {
             for (int col = 0; col < Board.board[row].length; col++) {                
@@ -163,6 +163,4 @@ public class Board {
             }
         }
     }
-
-    
 }

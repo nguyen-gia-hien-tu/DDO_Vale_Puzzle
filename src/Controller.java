@@ -14,6 +14,10 @@ public class Controller {
         new GUI();
 
 
+        // Link how to binary RREF
+        // https://stackoverflow.com/questions/14637478/how-can-i-find-a-solution-of-binary-matrix-equation-ax-b
+
+
         // ************* Terminal Graphic ***************
         // Scanner sc = new Scanner(System.in);
 
