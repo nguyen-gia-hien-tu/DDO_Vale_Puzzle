@@ -6,30 +6,30 @@ public class Solver {
         MultipleBoard[] oneTileClickedBoards = new MultipleBoard[boardSize * boardSize];
         MultipleBoard comboBoard = new MultipleBoard(boardSize * boardSize, boardSize * boardSize);
 
-        // Print out all the boards with one tile is clicked
-        System.out.println("\nBoards with One Tile Clicked:");
-        for (int i = 0; i < oneTileClickedBoards.length; i++) {
-            oneTileClickedBoards[i] = new MultipleBoard(boardSize, boardSize);
-            oneTileClickedBoards[i].flipCurrAndAdjLights(i / boardSize, i % boardSize);
-            printBoard(oneTileClickedBoards[i]);
-            System.out.println();
-        }
+        // // Print out all the boards with one tile is clicked
+        // System.out.println("\nBoards with One Tile Clicked:");
+        // for (int i = 0; i < oneTileClickedBoards.length; i++) {
+        //     oneTileClickedBoards[i] = new MultipleBoard(boardSize, boardSize);
+        //     oneTileClickedBoards[i].flipCurrAndAdjLights(i / boardSize, i % boardSize);
+        //     printBoard(oneTileClickedBoards[i]);
+        //     System.out.println();
+        // }
 
-        // To create comboBoard, the numbers at position [row][col]
-        // (where 0 <= row < boardSize, 0 <= col < boardSize)
-        // of each board in the oneTileClickedBoards
-        // will form the row (boardSize * row + col) of the comboBoard
-        for (int row = 0; row < boardSize; row++) {
-            for (int col = 0; col < boardSize; col++) {
-                for (int i = 0; i < oneTileClickedBoards.length; i++) {
-                    comboBoard.setBoard(boardSize * row + col, i,
-                                        oneTileClickedBoards[i].getBoard(row, col).getLightState());
-                }
-            }
-        }
-        System.out.println();
-        System.out.println("Combo Board:");
-        printBoard(comboBoard);
+        // // To create comboBoard, the numbers at position [row][col]
+        // // (where 0 <= row < boardSize, 0 <= col < boardSize)
+        // // of each board in the oneTileClickedBoards
+        // // will form the row (boardSize * row + col) of the comboBoard
+        // for (int row = 0; row < boardSize; row++) {
+        //     for (int col = 0; col < boardSize; col++) {
+        //         for (int i = 0; i < oneTileClickedBoards.length; i++) {
+        //             comboBoard.setBoard(boardSize * row + col, i,
+        //                                 oneTileClickedBoards[i].getBoard(row, col).getLightState());
+        //         }
+        //     }
+        // }
+        // System.out.println();
+        // System.out.println("Combo Board:");
+        // printBoard(comboBoard);
 
 
         // // Test oneColumnize function
@@ -41,6 +41,8 @@ public class Solver {
         // // Test oneColumnized(revLightBoard)
         // testOneColumnizeRevLight(boardSize);
 
+        // Test binaryRREF function
+        testBinaryRREF(boardSize);
 
     }
 
@@ -118,9 +120,9 @@ public class Solver {
     // Binary Reduced Row Echelon
     private static void binaryRREF(MultipleBoard board) {
         int currentRow = 0;
-        while (currentRow < board.getLengthSize()) {
-            int currentCol = currentRow;
+        int currentCol = 0;
 
+        while (currentRow < board.getLengthSize() && currentCol < board.getWidthSize()) {
             // If the pivot tile is not light on
             while (currentCol < board.getWidthSize() && 
                    !board.getBoard(currentRow, currentCol).isLightOn()) {
@@ -154,18 +156,38 @@ public class Solver {
             if (currentCol >= board.getWidthSize())
                 break;
 
-            // Xor the rows below whose currentCol is 1
+            // Xor the all other rows whose currentCol is 1
             // to make only the currentRow has 1 (light on) at currentCol
-            for (int laterRow = currentRow + 1; laterRow < board.getLengthSize(); laterRow++) {
-                if (board.getBoard(laterRow, currentCol).isLightOn()) {
+            for (int otherRow = 0; otherRow < board.getLengthSize(); otherRow++) {
+                if (otherRow != currentRow && board.getBoard(otherRow, currentCol).isLightOn()) {
                     for (int col = 0; col < board.getWidthSize(); col++) {
-                        board.setBoard(laterRow, col, 
-                                       board.getBoard(laterRow, col).getLightState() 
+                        board.setBoard(otherRow, col, 
+                                       board.getBoard(otherRow, col).getLightState() 
                                        ^ board.getBoard(currentRow, col).getLightState());
                     }
                 }
             }
+
+            // Increase currentRow
+            currentRow++;
+
+            System.out.println();
+            printBoard(board);
         }
+    }
+
+    private static void testBinaryRREF(int boardSize) {
+        MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
+        testBoard.setBoard(0, 0, true);
+        testBoard.setBoard(0, 2, true);
+        testBoard.setBoard(1, 2, true);
+        testBoard.setBoard(2, 0, true);
+        testBoard.setBoard(2, 1, true);
+        testBoard.setBoard(2, 2, true);
+        System.out.println("\nOriginal Board:");
+        printBoard(testBoard);
+        System.out.println("\nBinary RREF Board:");
+        binaryRREF(testBoard);
     }
 
 }
