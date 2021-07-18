@@ -116,4 +116,56 @@ public class Solver {
 
 
     // Binary Reduced Row Echelon
+    private static void binaryRREF(MultipleBoard board) {
+        int currentRow = 0;
+        while (currentRow < board.getLengthSize()) {
+            int currentCol = currentRow;
+
+            // If the pivot tile is not light on
+            while (currentCol < board.getWidthSize() && 
+                   !board.getBoard(currentRow, currentCol).isLightOn()) {
+                // Find in the later rows where that column is 1 (light on)
+                for (int laterRow = currentRow + 1; laterRow < board.getLengthSize(); laterRow++) {
+                    // If we found the wanted row
+                    if (board.getBoard(laterRow, currentCol).isLightOn()) {
+                        // Swap the row "row" with the row "laterRow"
+                        for (int col = 0; col < board.getWidthSize(); col++) {
+                            boolean temp = board.getBoard(currentRow, col).getLightState();
+                            board.setBoard(currentRow, col, board.getBoard(laterRow, col).getLightState());
+                            board.setBoard(laterRow, col, temp);
+                        }
+                        // Break the loop since we don't need to find anymore
+                        break;
+                    }
+                }
+
+                // If the pivot tile is still not light on after finding in later rows,
+                // it means the whole column starting from currentRow down is not light on
+                if (!board.getBoard(currentRow, currentCol).isLightOn()) {
+                    // Move to the next column
+                    currentCol++;
+                } else {
+                    // If the pivot tile is light on, break the loop
+                    break;
+                }                
+            }
+
+            // If we pass the end of the column, then break the loop
+            if (currentCol >= board.getWidthSize())
+                break;
+
+            // Xor the rows below whose currentCol is 1
+            // to make only the currentRow has 1 (light on) at currentCol
+            for (int laterRow = currentRow + 1; laterRow < board.getLengthSize(); laterRow++) {
+                if (board.getBoard(laterRow, currentCol).isLightOn()) {
+                    for (int col = 0; col < board.getWidthSize(); col++) {
+                        board.setBoard(laterRow, col, 
+                                       board.getBoard(laterRow, col).getLightState() 
+                                       ^ board.getBoard(currentRow, col).getLightState());
+                    }
+                }
+            }
+        }
+    }
+
 }
