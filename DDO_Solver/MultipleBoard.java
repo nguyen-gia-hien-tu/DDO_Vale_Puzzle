@@ -4,7 +4,9 @@ import src.Tile;
 
 public class MultipleBoard {
 
+    // lengthSize is the number of rows
     private int lengthSize;
+    // widthSize is the number of columns
     private int widthSize;
     private Tile[][] board;
     private int moves;

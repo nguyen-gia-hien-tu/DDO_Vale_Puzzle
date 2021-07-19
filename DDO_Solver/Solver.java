@@ -2,7 +2,7 @@ package DDO_Solver;
 
 public class Solver {
     public static void main(String[] args) {
-        int boardSize = 3;
+        int boardSize = 4;
         MultipleBoard[] oneTileClickedBoards = new MultipleBoard[boardSize * boardSize];
         MultipleBoard comboBoard = new MultipleBoard(boardSize * boardSize, boardSize * boardSize);
 
@@ -11,8 +11,8 @@ public class Solver {
         for (int i = 0; i < oneTileClickedBoards.length; i++) {
             oneTileClickedBoards[i] = new MultipleBoard(boardSize, boardSize);
             oneTileClickedBoards[i].flipCurrAndAdjLights(i / boardSize, i % boardSize);
-            printBoard(oneTileClickedBoards[i]);
-            System.out.println();
+            // printBoard(oneTileClickedBoards[i]);
+            // System.out.println();
         }
 
         // To create comboBoard, the numbers at position [row][col]
@@ -31,35 +31,62 @@ public class Solver {
         System.out.println("Combo Board:");
         printBoard(comboBoard);
 
+        // // comboBoard after RREF
+        // binaryRREF(comboBoard);
+        // System.out.println("\nCombo Board After RREF:");
+        // printBoard(comboBoard);
         
-        // Test Board (Initial Board)
+        // // Test Board (Initial Board)
+        // MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
+        // // [0 1 0]
+        // // [1 1 0]
+        // // [0 1 1]
+        // testBoard.setBoard(0, 1, true);
+        // testBoard.setBoard(1, 0, true);
+        // testBoard.setBoard(1, 1, true);
+        // testBoard.setBoard(2, 1, true);
+        // testBoard.setBoard(2, 2, true);
+        // System.out.println("\nOriginal Board:");
+        // printBoard(testBoard);
+
+        // MultipleBoard revLightBoard = reverseLightBoard(testBoard);
+        // MultipleBoard oneColumnBoard = oneColumnize(testBoard);
+        // MultipleBoard oneColumnRevLightBoard = oneColumnize(revLightBoard);
+        // System.out.println();
+        // // System.out.println("One Column Light Board:");
+        // // printBoard(oneColumnBoard);
+        // System.out.println("One Colum Reverse Light Board:");
+        // printBoard(oneColumnRevLightBoard);
+
+        // // binaryRREFTwoMatrices(comboBoard, oneColumnBoard);
+        // // System.out.println("One Column Board After RREF:");
+        // // printBoard(oneColumnBoard);
+
+        // binaryRREFTwoMatrices(comboBoard, oneColumnRevLightBoard);
+        // System.out.println("One Column Reverse Light Board After RREF of Combo Board:");
+        // printBoard(oneColumnRevLightBoard);
+
+        // MultipleBoard revOneColRevLightBoard = reverseOneColumnize(oneColumnRevLightBoard, boardSize, boardSize);
+        // System.out.println("\nReverse One Column Reverse Light Board After RREF of Combo Board:");
+        // printBoard(revOneColRevLightBoard);
+
+
+        // Test Board 4 x 4
         MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-        // [0 1 0]
-        // [1 1 0]
-        // [0 1 1]
+        testBoard.setBoard(0, 0, true); 
         testBoard.setBoard(0, 1, true);
         testBoard.setBoard(1, 0, true);
-        testBoard.setBoard(1, 1, true);
         testBoard.setBoard(2, 1, true);
         testBoard.setBoard(2, 2, true);
+        testBoard.setBoard(3, 0, true);
+        testBoard.setBoard(3, 3, true);
         System.out.println("\nOriginal Board:");
         printBoard(testBoard);
+        MultipleBoard oneColRevLightBoard = oneColumnize(reverseLightBoard(testBoard));
+        binaryRREFTwoMatrices(comboBoard, oneColRevLightBoard);
+        System.out.println("\nSolution:");
+        printBoard(reverseOneColumnize(oneColRevLightBoard, 4, 4));
 
-        MultipleBoard revLightBoard = reverseLightBoard(testBoard);
-        MultipleBoard oneColumnBoard = oneColumnize(testBoard);
-        MultipleBoard oneColumnRevLightBoard = oneColumnize(revLightBoard);
-        System.out.println();
-        // System.out.println("One Column Light Board:");
-        // printBoard(oneColumnBoard);
-        System.out.println("One Colum Reverse Light Board:");
-        printBoard(oneColumnRevLightBoard);
-
-        binaryRREFTwoMatrices(comboBoard, oneColumnBoard);
-        // System.out.println("One Column Board After RREF:");
-        // printBoard(oneColumnBoard);
-
-        System.out.println("One Column Reverse Light Board After RREF:");
-        printBoard(oneColumnRevLightBoard);
 
 
 
@@ -90,7 +117,7 @@ public class Solver {
 
 
     // Turn the m x n board into an (mxn) x 1 board (a one column board)
-    private static MultipleBoard oneColumnize(MultipleBoard board) {
+    public static MultipleBoard oneColumnize(MultipleBoard board) {
         int rowInc = 0;
         MultipleBoard oneColumnBoard = new MultipleBoard(board.getLengthSize() * board.getWidthSize(), 1);
         for (int row = 0; row < board.getLengthSize(); row++) {
@@ -101,16 +128,15 @@ public class Solver {
         return oneColumnBoard;
     }
 
-    private static void testOneColumnize(int boardSize) {
-        // Turn a board into a one column board
-        MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-        testBoard.generateRandomBoard();
-        System.out.println();
-        System.out.println("Original Board:");
-        printBoard(testBoard);
-        System.out.println();
-        System.out.println("One Columnized Board:");
-        printBoard(oneColumnize(testBoard));
+
+    // Turn an (mxn) x 1 board to m x n board
+    public static MultipleBoard reverseOneColumnize(MultipleBoard board, int newBoardLength, int newBoardWidth) {
+        MultipleBoard revOneColBoard = new MultipleBoard(newBoardLength, newBoardWidth);
+        for (int row = 0; row < board.getLengthSize(); row++) {
+            revOneColBoard.setBoard(row / newBoardWidth, row % newBoardWidth,
+                                    board.getBoard(row, 0).getLightState());
+        }
+        return revOneColBoard;
     }
 
 
@@ -125,31 +151,9 @@ public class Solver {
         return revLightBoard;
     }
 
-    private static void testRevLight(int boardSize) {
-        MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-        testBoard.generateRandomBoard();
-        System.out.println();
-        System.out.println("Original Board:");
-        printBoard(testBoard);
-        System.out.println();
-        System.out.println("Reversed Light Board:");
-        printBoard(reverseLightBoard(testBoard));
-    }
-
-    private static void testOneColumnizeRevLight(int boardSize) {
-        MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-        testBoard.generateRandomBoard();
-        System.out.println();
-        System.out.println("Original Board:");
-        printBoard(testBoard);
-        System.out.println();
-        System.out.println("OneColumnize Reversed Light Board:");
-        printBoard(oneColumnize(reverseLightBoard(testBoard)));
-    }
-
 
     // Binary Reduced Row Echelon
-    private static void binaryRREF(MultipleBoard board) {
+    public static void binaryRREF(MultipleBoard board) {
         int currentRow = 0;
         int currentCol = 0;
 
@@ -205,7 +209,7 @@ public class Solver {
     }
 
 
-    private static void binaryRREFTwoMatrices(MultipleBoard boardA, MultipleBoard boardB) {
+    public static void binaryRREFTwoMatrices(MultipleBoard boardA, MultipleBoard boardB) {
         int currentRow = 0;
         int currentCol = 0;
 
@@ -271,88 +275,4 @@ public class Solver {
             currentRow++;
         }
     }
-
-
-    private static void testBinaryRREF(int boardSize) {
-        MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-
-        // [1 0 1]
-        // [0 0 1]
-        // [1 1 1]
-        // testBoard.setBoard(0, 0, true);
-        // testBoard.setBoard(0, 2, true);
-        // testBoard.setBoard(1, 2, true);
-        // testBoard.setBoard(2, 0, true);
-        // testBoard.setBoard(2, 1, true);
-        // testBoard.setBoard(2, 2, true);
-        // System.out.println("\nOriginal Board:");
-        // printBoard(testBoard);
-        // System.out.println("\nBinary RREF Board:");
-        // binaryRREF(testBoard);
-
-        // [0 0 1]
-        // [0 1 0]
-        // [1 0 0]
-        // testBoard = new MultipleBoard(boardSize, boardSize);
-        // testBoard.setBoard(0, 2, true);
-        // testBoard.setBoard(1, 1, true);
-        // testBoard.setBoard(2, 0, true);
-        // System.out.println("\nOriginal Board:");
-        // printBoard(testBoard);
-        // System.out.println("\nBinary RREF Board:");
-        // binaryRREF(testBoard);
-
-        // [1 1 0]
-        // [0 1 0]
-        // [0 1 1]
-        // testBoard = new MultipleBoard(boardSize, boardSize);
-        // testBoard.setBoard(0, 0, true);
-        // testBoard.setBoard(0, 1, true);
-        // testBoard.setBoard(1, 1, true);
-        // testBoard.setBoard(2, 1, true);
-        // testBoard.setBoard(2, 2, true);
-        // System.out.println("\nOriginal Board:");
-        // printBoard(testBoard);
-        // System.out.println("\nBinary RREF Board:");
-        // binaryRREF(testBoard);
-
-        // [0 1 1 | 0]
-        // [0 1 1 | 0]
-        // [1 1 1 | 1]
-        // testBoard = new MultipleBoard(boardSize, boardSize);
-        // testBoard.setBoard(0, 1, true);
-        // testBoard.setBoard(0, 2, true);
-        // testBoard.setBoard(1, 1, true);
-        // testBoard.setBoard(1, 2, true);
-        // testBoard.setBoard(2, 0, true);
-        // testBoard.setBoard(2, 1, true);
-        // testBoard.setBoard(2, 2, true);
-
-        // [1 0 0 | 0]
-        // [0 1 1 | 0]
-        // [1 1 0 | 1]
-        testBoard = new MultipleBoard(boardSize, boardSize);
-        testBoard.setBoard(0, 0, true);
-        testBoard.setBoard(1, 1, true);
-        testBoard.setBoard(1, 2, true);
-        testBoard.setBoard(2, 0, true);
-        testBoard.setBoard(2, 1, true);
-
-        MultipleBoard testBoard2 = new MultipleBoard(3, 1);
-        testBoard2.setBoard(2, 0, true);
-
-        System.out.println("\nOriginal Board:");
-        System.out.println("Board A:");
-        printBoard(testBoard);
-        System.out.println("Board B:");
-        printBoard(testBoard2);
-        System.out.println("\nBinary RREF Boards:");
-        binaryRREFTwoMatrices(testBoard, testBoard2);
-        System.out.println("Board A:");
-        printBoard(testBoard);
-        System.out.println("Board B:");
-        printBoard(testBoard2);
-        
-    }
-
 }
