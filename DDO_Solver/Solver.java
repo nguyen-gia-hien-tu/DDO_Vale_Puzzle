@@ -132,7 +132,32 @@ public class Solver {
     // where A_{i j}.length is the number of row in a matrix A_{i j}
     // Note: the number of rows in all matrices A_{i j} is the same
     //       as well as the number of columns
+    // 1 - L is in the one column format
+    // Note: 1 - L is the matrix where all entries in the matrix L
+    //       is flipped (0 -> 1, 1 -> 0)
     public static MultipleBoard solvePuzzle() {
+        // STEP 1: Create the comboBoard
+        // Create an array of boards where only one tile is clicked
+        oneTileClickedBoards = new MultipleBoard[Board.getSize() * Board.getSize()];
+        for (int i = 0; i < oneTileClickedBoards.length; i++) {
+            oneTileClickedBoards[i] = new MultipleBoard(Board.getSize(), Board.getSize());
+            oneTileClickedBoards[i].flipCurrAndAdjLights(i / Board.getSize(), i % Board.getSize());
+        }
+
+        // To create comboBoard, the light state at position [row][col]
+        // (where 0 <= row < Board.getSize(), 0 <= col < Board.getSize())
+        // of each board in the oneTileClickedBoards
+        // will form the row (boardSize * row + col) of the comboBoard
+        for (int row = 0; row < Board.getSize(); row++) {
+            for (int col = 0; col < Board.getSize(); col++) {
+                for (int i = 0; i < oneTileClickedBoards.length; i++) {
+                    comboBoard.setBoard(Board.getSize() * row + col, i,
+                                        oneTileClickedBoards[i].getBoard(row, col).getLightState());
+                }
+            }
+        }
+
+        // STEP 2: Convert the given board into the one column reversed light board
         // Convert the Board into MultipleBoard
         MultipleBoard givenBoard = new MultipleBoard(Board.getSize(), Board.getSize());
         for (int row = 0; row < Board.getSize(); row++) {
@@ -141,9 +166,19 @@ public class Solver {
             }
         }
 
-        // Reverse the light of the givenBoard
+        // Reverse the light of all entries of the givenBoard (i.e. 1 - L)
+        MultipleBoard revLightBoard = reverseLightBoard(givenBoard);
+        // One Columnize the revLightBoard
+        MultipleBoard oneColRevLightBoard = oneColumnize(revLightBoard);
 
-
+        // STEP 3: Perform reduced row echelon (in modulus 2) on comboBoard
+        //         and apply the same operation on each step to the oneColRevLightBoard.
+        //         The result of the onColRevLightBoard is the expected "solution" board
+        //         before checking for no solution (inconsistent in the matrices)
+        // Perform binaryRREFTwoMatrices on the comboBoard and the oneColRevLightBoard
+        MultipleBoard[] resultBoards = binaryRREFTwoMatrices(comboBoard, oneColRevLightBoard);
+        MultipleBoard comboBoardRREF = resultBoards[0];
+        MultipleBoard solutionBoard = resultBoards[1];
 
         return null;
     }
@@ -151,7 +186,7 @@ public class Solver {
 
 
     // Check if the board is solvable
-    private static boolean isSolvable(MultipleBoard comboBoardRREF, MultipleBoard solutionBoard) {
+    public static boolean isSolvable(MultipleBoard comboBoardRREF, MultipleBoard solutionBoard) {
         // The board is solvable if there is no row in the RREF of comboBoard
         // has all light off but the solution board in one column format
         // at that row has light on
@@ -188,18 +223,6 @@ public class Solver {
             numLightOffInARow = 0;
         }
         return true;
-    }
-
-
-
-    // Print the board
-    private static void printBoard(MultipleBoard board) {
-        for (int row = 0; row < board.getLengthSize(); row++) {
-            for (int col = 0; col < board.getWidthSize(); col++) {
-                System.out.print(board.getBoard(row, col).isLightOn() ? "1 " : "0 ");
-            }
-            System.out.println();
-        }
     }
 
 
@@ -309,8 +332,7 @@ public class Solver {
     // This function perform the RREF on matrix A and do the same operation on each step
     // to matrix B. This is similar to solving an augmented matrix
     public static MultipleBoard[] binaryRREFTwoMatrices(MultipleBoard board1, MultipleBoard board2) {
-        // Return an array of two matrices
-        MultipleBoard[] resultBoards = new MultipleBoard[2];
+
         // Copy board1 to boardA
         MultipleBoard boardA = new MultipleBoard(board1.getLengthSize(), board1.getWidthSize());
         for (int row = 0; row < board1.getLengthSize(); row++) {
@@ -326,6 +348,7 @@ public class Solver {
             }
         }
 
+        // Perform RREF
         int currentRow = 0;
         int currentCol = 0;
 
@@ -354,7 +377,7 @@ public class Solver {
                     }
                 }
 
-                // If the pivot tile is still not light on after finding in later rows,
+                // If the pivot tile is still not light on after finding and swapping in later rows,
                 // it means the whole column starting from currentRow down is not light on
                 if (!boardA.getBoard(currentRow, currentCol).isLightOn()) {
                     // Move to the next column
@@ -369,8 +392,9 @@ public class Solver {
             if (currentCol >= boardA.getWidthSize())
                 break;
 
-            // Xor the all other rows whose currentCol is 1
+            // XOR all other rows whose currentCol is 1
             // to make only the currentRow has 1 (light on) at currentCol
+            // XOR operation in Java is ^
             for (int otherRow = 0; otherRow < boardA.getLengthSize(); otherRow++) {
                 if (otherRow != currentRow && boardA.getBoard(otherRow, currentCol).isLightOn()) {
                     for (int col = 0; col < boardA.getWidthSize(); col++) {
@@ -391,6 +415,17 @@ public class Solver {
             currentRow++;
         }
 
-        return resultBoards;
+        return new MultipleBoard[] {boardA, boardB};
+    }
+
+
+    // Print the board
+    private static void printBoard(MultipleBoard board) {
+        for (int row = 0; row < board.getLengthSize(); row++) {
+            for (int col = 0; col < board.getWidthSize(); col++) {
+                System.out.print(board.getBoard(row, col).isLightOn() ? "1 " : "0 ");
+            }
+            System.out.println();
+        }
     }
 }
