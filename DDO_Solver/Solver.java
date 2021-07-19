@@ -1,5 +1,7 @@
 package DDO_Solver;
 
+import src.Board;
+
 public class Solver {
     private static MultipleBoard[] oneTileClickedBoards;
     private static MultipleBoard comboBoard;
@@ -107,8 +109,49 @@ public class Solver {
     }
 
 
-    // Implementing solver analysis
-    private static boolean isSolvable() {
+    // Solve the puzzle
+    // The idea:
+    //      L + sum_{i, j} (x_{i j} A_{i j}) = 1
+    // where L       is the given board,
+    //       A_{i j} is the board where only the tile
+    //               at row i, column j is clicked
+    //       x_{i j} is the number of times the board
+    //               A_{i j} needs to appear. In this case,
+    //               x_{i j} is either 0 or 1 since we only
+    //               need to click a tile zero or one time.
+    //               Clicking the tile 2 times is the same
+    //               as not clicking the tile
+    //       1       is the matrix where all entries are 1 (light on)  
+    // x_{i j} is the ones we need to find
+    // Solve the equation:
+    //      sum_{i, j} (x_{i j} A_{i j}) = 1 - L
+    // Hence, to solve this equation, we need to solve the augmented matrix:
+    //      A x = 1 - L
+    // where each entry at row r, column c of the matrices A_{i j}
+    // form the row (A_{i j}.length * r + c) in the big matrix A
+    // where A_{i j}.length is the number of row in a matrix A_{i j}
+    // Note: the number of rows in all matrices A_{i j} is the same
+    //       as well as the number of columns
+    public static MultipleBoard solvePuzzle() {
+        // Convert the Board into MultipleBoard
+        MultipleBoard givenBoard = new MultipleBoard(Board.getSize(), Board.getSize());
+        for (int row = 0; row < Board.getSize(); row++) {
+            for (int col = 0; col < Board.getSize(); col++) {
+                givenBoard.setBoard(row, col, Board.getBoard(row, col).getLightState());
+            }
+        }
+
+        // Reverse the light of the givenBoard
+
+
+
+        return null;
+    }
+
+
+
+    // Check if the board is solvable
+    private static boolean isSolvable(MultipleBoard comboBoardRREF, MultipleBoard solutionBoard) {
         // The board is solvable if there is no row in the RREF of comboBoard
         // has all light off but the solution board in one column format
         // at that row has light on
@@ -117,7 +160,33 @@ public class Solver {
         //      [0 0 0 1 | 0]
         //      [0 0 0 0 | 1]
         //      -> unsolvable since the augmented matrix has no solution
-        // Prerequisite 
+
+        // A counter to keep track the number of lights off in a row
+        int numLightOffInARow = 0;
+        for (int row = 0; row < comboBoardRREF.getLengthSize(); row++) {
+            for (int col = 0; col < comboBoardRREF.getWidthSize(); col++) {
+                // If the light is not on
+                if (!comboBoardRREF.getBoard(row, col).isLightOn()) {
+                    // Increase the counter for the number of lights off for that row
+                    numLightOffInARow++;
+                }
+            }
+
+            // If the total number of lights off in a row equals the widthSize
+            // (the number of columns), then that row has all lights off
+            if (numLightOffInARow == comboBoardRREF.getWidthSize()) {
+                // If the corresponding row of the "solution" matrix is light on
+                if (solutionBoard.getBoard(row, 0).isLightOn()) {
+                    // Then the board is unsolvable
+                    return false;
+                }
+                // If the corresponding row of the "solution" matrix is light off
+                // Then we continue to search for the next row
+            }
+
+            // Reset the counter for the number of lights off in a row
+            numLightOffInARow = 0;
+        }
         return true;
     }
 
