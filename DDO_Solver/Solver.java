@@ -6,30 +6,62 @@ public class Solver {
         MultipleBoard[] oneTileClickedBoards = new MultipleBoard[boardSize * boardSize];
         MultipleBoard comboBoard = new MultipleBoard(boardSize * boardSize, boardSize * boardSize);
 
-        // // Print out all the boards with one tile is clicked
-        // System.out.println("\nBoards with One Tile Clicked:");
-        // for (int i = 0; i < oneTileClickedBoards.length; i++) {
-        //     oneTileClickedBoards[i] = new MultipleBoard(boardSize, boardSize);
-        //     oneTileClickedBoards[i].flipCurrAndAdjLights(i / boardSize, i % boardSize);
-        //     printBoard(oneTileClickedBoards[i]);
-        //     System.out.println();
-        // }
+        // Print out all the boards with one tile is clicked
+        System.out.println("\nBoards with One Tile Clicked:");
+        for (int i = 0; i < oneTileClickedBoards.length; i++) {
+            oneTileClickedBoards[i] = new MultipleBoard(boardSize, boardSize);
+            oneTileClickedBoards[i].flipCurrAndAdjLights(i / boardSize, i % boardSize);
+            printBoard(oneTileClickedBoards[i]);
+            System.out.println();
+        }
 
-        // // To create comboBoard, the numbers at position [row][col]
-        // // (where 0 <= row < boardSize, 0 <= col < boardSize)
-        // // of each board in the oneTileClickedBoards
-        // // will form the row (boardSize * row + col) of the comboBoard
-        // for (int row = 0; row < boardSize; row++) {
-        //     for (int col = 0; col < boardSize; col++) {
-        //         for (int i = 0; i < oneTileClickedBoards.length; i++) {
-        //             comboBoard.setBoard(boardSize * row + col, i,
-        //                                 oneTileClickedBoards[i].getBoard(row, col).getLightState());
-        //         }
-        //     }
-        // }
+        // To create comboBoard, the numbers at position [row][col]
+        // (where 0 <= row < boardSize, 0 <= col < boardSize)
+        // of each board in the oneTileClickedBoards
+        // will form the row (boardSize * row + col) of the comboBoard
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                for (int i = 0; i < oneTileClickedBoards.length; i++) {
+                    comboBoard.setBoard(boardSize * row + col, i,
+                                        oneTileClickedBoards[i].getBoard(row, col).getLightState());
+                }
+            }
+        }
+        System.out.println();
+        System.out.println("Combo Board:");
+        printBoard(comboBoard);
+
+        
+        // Test Board (Initial Board)
+        MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
+        // [0 1 0]
+        // [1 1 0]
+        // [0 1 1]
+        testBoard.setBoard(0, 1, true);
+        testBoard.setBoard(1, 0, true);
+        testBoard.setBoard(1, 1, true);
+        testBoard.setBoard(2, 1, true);
+        testBoard.setBoard(2, 2, true);
+        System.out.println("\nOriginal Board:");
+        printBoard(testBoard);
+
+        // MultipleBoard revLightBoard = reverseLightBoard(testBoard);
+        // MultipleBoard oneColumnBoard = oneColumnize(testBoard);
+        // MultipleBoard oneColumnRevLightBoard = oneColumnize(revLightBoard);
         // System.out.println();
-        // System.out.println("Combo Board:");
-        // printBoard(comboBoard);
+        // System.out.println("One Column Light Board:");
+        // printBoard(oneColumnBoard);
+        // // System.out.println("One Colum Reverse Light Board:");
+        // // printBoard(oneColumnRevLightBoard);
+
+        // binaryRREFTwoMatrices(comboBoard, oneColumnBoard);
+        // System.out.println("One Column Board After RREF:");
+        // printBoard(oneColumnBoard);
+
+        // binaryRREFTwoMatrices(testBoard, oneColumnRevLightBoard);
+        // System.out.println("One Column Reverse Light Board After RREF:");
+        // printBoard(oneColumnRevLightBoard);
+
 
 
         // // Test oneColumnize function
@@ -170,9 +202,6 @@ public class Solver {
 
             // Increase currentRow
             currentRow++;
-
-            System.out.println();
-            printBoard(board);
         }
     }
 
@@ -196,7 +225,7 @@ public class Solver {
                             boardA.setBoard(laterRow, col, temp);
                         }
                         // Do the same for board (matrix) B
-                        for (int col = 0; col <boardB.getWidthSize(); col++) {
+                        for (int col = 0; col < boardB.getWidthSize(); col++) {
                             boolean temp = boardB.getBoard(currentRow, col).getLightState();
                             boardB.setBoard(currentRow, col, boardB.getBoard(laterRow, col).getLightState());
                             boardB.setBoard(laterRow, col, temp);
@@ -230,16 +259,17 @@ public class Solver {
                                         boardA.getBoard(otherRow, col).getLightState() 
                                         ^ boardA.getBoard(currentRow, col).getLightState());
                     }
+                    // Do the same operation for matrix B
+                    for (int col = 0; col < boardA.getWidthSize(); col++) {
+                        boardB.setBoard(otherRow, col, 
+                                        boardB.getBoard(otherRow, col).getLightState() 
+                                        ^ boardB.getBoard(currentRow, col).getLightState());
+                    }
                 }
             }
 
             // Increase currentRow
             currentRow++;
-
-            System.out.println("Board A:");
-            printBoard(boardA);
-            System.out.println("Board B:");
-            printBoard(boardB);
         }
     }
 
@@ -290,14 +320,24 @@ public class Solver {
         // [0 1 1 | 0]
         // [0 1 1 | 0]
         // [1 1 1 | 1]
+        // testBoard = new MultipleBoard(boardSize, boardSize);
+        // testBoard.setBoard(0, 1, true);
+        // testBoard.setBoard(0, 2, true);
+        // testBoard.setBoard(1, 1, true);
+        // testBoard.setBoard(1, 2, true);
+        // testBoard.setBoard(2, 0, true);
+        // testBoard.setBoard(2, 1, true);
+        // testBoard.setBoard(2, 2, true);
+
+        // [1 0 0 | 0]
+        // [0 1 1 | 0]
+        // [1 1 0 | 1]
         testBoard = new MultipleBoard(boardSize, boardSize);
-        testBoard.setBoard(0, 1, true);
-        testBoard.setBoard(0, 2, true);
+        testBoard.setBoard(0, 0, true);
         testBoard.setBoard(1, 1, true);
         testBoard.setBoard(1, 2, true);
         testBoard.setBoard(2, 0, true);
         testBoard.setBoard(2, 1, true);
-        testBoard.setBoard(2, 2, true);
 
         MultipleBoard testBoard2 = new MultipleBoard(3, 1);
         testBoard2.setBoard(2, 0, true);
@@ -307,11 +347,12 @@ public class Solver {
         printBoard(testBoard);
         System.out.println("Board B:");
         printBoard(testBoard2);
-        System.out.println("\nBinary RREF Board:");
+        System.out.println("\nBinary RREF Boards:");
+        binaryRREFTwoMatrices(testBoard, testBoard2);
         System.out.println("Board A:");
-        binaryRREF(testBoard);
+        printBoard(testBoard);
         System.out.println("Board B:");
-        binaryRREF(testBoard2);
+        printBoard(testBoard2);
         
     }
 
