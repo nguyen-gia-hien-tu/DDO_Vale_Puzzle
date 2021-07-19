@@ -1,10 +1,12 @@
 package DDO_Solver;
 
 public class Solver {
+    private static MultipleBoard[] oneTileClickedBoards;
+    private static MultipleBoard comboBoard;
     public static void main(String[] args) {
         int boardSize = 4;
-        MultipleBoard[] oneTileClickedBoards = new MultipleBoard[boardSize * boardSize];
-        MultipleBoard comboBoard = new MultipleBoard(boardSize * boardSize, boardSize * boardSize);
+        oneTileClickedBoards = new MultipleBoard[boardSize * boardSize];
+        comboBoard = new MultipleBoard(boardSize * boardSize, boardSize * boardSize);
 
         // Print out all the boards with one tile is clicked
         System.out.println("\nBoards with One Tile Clicked:");
@@ -15,7 +17,7 @@ public class Solver {
             // System.out.println();
         }
 
-        // To create comboBoard, the numbers at position [row][col]
+        // To create comboBoard, the light state at position [row][col]
         // (where 0 <= row < boardSize, 0 <= col < boardSize)
         // of each board in the oneTileClickedBoards
         // will form the row (boardSize * row + col) of the comboBoard
@@ -105,6 +107,22 @@ public class Solver {
     }
 
 
+    // Implementing solver analysis
+    private static boolean isSolvable() {
+        // The board is solvable if there is no row in the RREF of comboBoard
+        // has all light off but the solution board in one column format
+        // at that row has light on
+        // e.g: [1 0 0 0 | 1]
+        //      [0 1 0 0 | 1]
+        //      [0 0 0 1 | 0]
+        //      [0 0 0 0 | 1]
+        //      -> unsolvable since the augmented matrix has no solution
+        // Prerequisite 
+        return true;
+    }
+
+
+
     // Print the board
     private static void printBoard(MultipleBoard board) {
         for (int row = 0; row < board.getLengthSize(); row++) {
@@ -153,7 +171,15 @@ public class Solver {
 
 
     // Binary Reduced Row Echelon
-    public static void binaryRREF(MultipleBoard board) {
+    public static MultipleBoard binaryRREF(MultipleBoard givenBoard) {
+        // Copy the givenBoard into board
+        MultipleBoard board = new MultipleBoard(givenBoard.getLengthSize(), givenBoard.getWidthSize());
+        for (int row = 0; row < givenBoard.getLengthSize(); row++) {
+            for (int col = 0; col < givenBoard.getWidthSize(); col++) {
+                board.setBoard(row, col, givenBoard.getBoard(row, col).getLightState());
+            }
+        }
+
         int currentRow = 0;
         int currentCol = 0;
 
@@ -206,10 +232,31 @@ public class Solver {
             // Increase currentRow
             currentRow++;
         }
+
+        return board;
     }
 
 
-    public static void binaryRREFTwoMatrices(MultipleBoard boardA, MultipleBoard boardB) {
+    // This function perform the RREF on matrix A and do the same operation on each step
+    // to matrix B. This is similar to solving an augmented matrix
+    public static MultipleBoard[] binaryRREFTwoMatrices(MultipleBoard board1, MultipleBoard board2) {
+        // Return an array of two matrices
+        MultipleBoard[] resultBoards = new MultipleBoard[2];
+        // Copy board1 to boardA
+        MultipleBoard boardA = new MultipleBoard(board1.getLengthSize(), board1.getWidthSize());
+        for (int row = 0; row < board1.getLengthSize(); row++) {
+            for (int col = 0; col <board1.getWidthSize(); col++) {
+                boardA.setBoard(row, col, board1.getBoard(row, col).getLightState());
+            }
+        }
+        // Copy board2 to boardB
+        MultipleBoard boardB = new MultipleBoard(board2.getLengthSize(), board2.getWidthSize());
+        for (int row = 0; row < board2.getLengthSize(); row++) {
+            for (int col = 0; col < board2.getWidthSize(); col++) {
+                boardB.setBoard(row, col, board2.getBoard(row, col).getLightState());
+            }
+        }
+
         int currentRow = 0;
         int currentCol = 0;
 
@@ -274,5 +321,7 @@ public class Solver {
             // Increase currentRow
             currentRow++;
         }
+
+        return resultBoards;
     }
 }
