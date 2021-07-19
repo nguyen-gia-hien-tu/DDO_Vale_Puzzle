@@ -260,7 +260,7 @@ public class Solver {
                                         ^ boardA.getBoard(currentRow, col).getLightState());
                     }
                     // Do the same operation for matrix B
-                    for (int col = 0; col < boardA.getWidthSize(); col++) {
+                    for (int col = 0; col < boardB.getWidthSize(); col++) {
                         boardB.setBoard(otherRow, col, 
                                         boardB.getBoard(otherRow, col).getLightState() 
                                         ^ boardB.getBoard(currentRow, col).getLightState());
