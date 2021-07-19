@@ -1,6 +1,32 @@
 package DDO_Solver;
 
+import src.Board;
+import src.Tile;
+
 public class TestingSolver {
+    public static void main(String[] args) {
+        // Test the Solver
+        Board.init(4);
+
+        // Draw the Board out
+        for (int row = 0; row < Board.getSize(); row++) {
+            for (int col = 0; col < Board.getSize(); col++) {
+                Tile tile = Board.getBoard(row, col);
+                if (tile.getLightState())
+                    System.out.print("1 ");
+                else
+                    System.out.print("0 ");
+            }
+            System.out.println();
+        }
+
+        // Solve the puzzle
+        MultipleBoard solvedBoard = Solver.solvePuzzle();
+        System.out.println();
+        printBoard(solvedBoard);
+
+    }
+
     private static void testOneColumnize(int boardSize) {
         // Turn a board into a one column board
         MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
@@ -122,6 +148,10 @@ public class TestingSolver {
 
     // Print the board
     private static void printBoard(MultipleBoard board) {
+        if (board == null) {
+            System.out.println("NULL");
+            return;
+        }
         for (int row = 0; row < board.getLengthSize(); row++) {
             for (int col = 0; col < board.getWidthSize(); col++) {
                 System.out.print(board.getBoard(row, col).isLightOn() ? "1 " : "0 ");

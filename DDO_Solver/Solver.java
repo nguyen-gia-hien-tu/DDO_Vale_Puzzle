@@ -3,112 +3,6 @@ package DDO_Solver;
 import src.Board;
 
 public class Solver {
-    private static MultipleBoard[] oneTileClickedBoards;
-    private static MultipleBoard comboBoard;
-    public static void main(String[] args) {
-        int boardSize = 4;
-        oneTileClickedBoards = new MultipleBoard[boardSize * boardSize];
-        comboBoard = new MultipleBoard(boardSize * boardSize, boardSize * boardSize);
-
-        // Print out all the boards with one tile is clicked
-        System.out.println("\nBoards with One Tile Clicked:");
-        for (int i = 0; i < oneTileClickedBoards.length; i++) {
-            oneTileClickedBoards[i] = new MultipleBoard(boardSize, boardSize);
-            oneTileClickedBoards[i].flipCurrAndAdjLights(i / boardSize, i % boardSize);
-            // printBoard(oneTileClickedBoards[i]);
-            // System.out.println();
-        }
-
-        // To create comboBoard, the light state at position [row][col]
-        // (where 0 <= row < boardSize, 0 <= col < boardSize)
-        // of each board in the oneTileClickedBoards
-        // will form the row (boardSize * row + col) of the comboBoard
-        for (int row = 0; row < boardSize; row++) {
-            for (int col = 0; col < boardSize; col++) {
-                for (int i = 0; i < oneTileClickedBoards.length; i++) {
-                    comboBoard.setBoard(boardSize * row + col, i,
-                                        oneTileClickedBoards[i].getBoard(row, col).getLightState());
-                }
-            }
-        }
-        System.out.println();
-        System.out.println("Combo Board:");
-        printBoard(comboBoard);
-
-        // // comboBoard after RREF
-        // binaryRREF(comboBoard);
-        // System.out.println("\nCombo Board After RREF:");
-        // printBoard(comboBoard);
-        
-        // // Test Board (Initial Board)
-        // MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-        // // [0 1 0]
-        // // [1 1 0]
-        // // [0 1 1]
-        // testBoard.setBoard(0, 1, true);
-        // testBoard.setBoard(1, 0, true);
-        // testBoard.setBoard(1, 1, true);
-        // testBoard.setBoard(2, 1, true);
-        // testBoard.setBoard(2, 2, true);
-        // System.out.println("\nOriginal Board:");
-        // printBoard(testBoard);
-
-        // MultipleBoard revLightBoard = reverseLightBoard(testBoard);
-        // MultipleBoard oneColumnBoard = oneColumnize(testBoard);
-        // MultipleBoard oneColumnRevLightBoard = oneColumnize(revLightBoard);
-        // System.out.println();
-        // // System.out.println("One Column Light Board:");
-        // // printBoard(oneColumnBoard);
-        // System.out.println("One Colum Reverse Light Board:");
-        // printBoard(oneColumnRevLightBoard);
-
-        // // binaryRREFTwoMatrices(comboBoard, oneColumnBoard);
-        // // System.out.println("One Column Board After RREF:");
-        // // printBoard(oneColumnBoard);
-
-        // binaryRREFTwoMatrices(comboBoard, oneColumnRevLightBoard);
-        // System.out.println("One Column Reverse Light Board After RREF of Combo Board:");
-        // printBoard(oneColumnRevLightBoard);
-
-        // MultipleBoard revOneColRevLightBoard = reverseOneColumnize(oneColumnRevLightBoard, boardSize, boardSize);
-        // System.out.println("\nReverse One Column Reverse Light Board After RREF of Combo Board:");
-        // printBoard(revOneColRevLightBoard);
-
-
-        // Test Board 4 x 4
-        MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-        testBoard.setBoard(0, 0, true); 
-        testBoard.setBoard(0, 1, true);
-        testBoard.setBoard(1, 0, true);
-        testBoard.setBoard(2, 1, true);
-        testBoard.setBoard(2, 2, true);
-        testBoard.setBoard(3, 0, true);
-        testBoard.setBoard(3, 3, true);
-        System.out.println("\nOriginal Board:");
-        printBoard(testBoard);
-        MultipleBoard oneColRevLightBoard = oneColumnize(reverseLightBoard(testBoard));
-        binaryRREFTwoMatrices(comboBoard, oneColRevLightBoard);
-        System.out.println("\nSolution:");
-        printBoard(reverseOneColumnize(oneColRevLightBoard, 4, 4));
-
-
-
-
-        // // Test oneColumnize function
-        // testOneColumnize(boardSize);
-
-        // // Test revLightBoard function
-        // testRevLight(boardSize);
-        
-        // // Test oneColumnized(revLightBoard)
-        // testOneColumnizeRevLight(boardSize);
-
-        // // Test binaryRREF function
-        // testBinaryRREF(boardSize);
-
-    }
-
-
     // Solve the puzzle
     // The idea:
     //      L + sum_{i, j} (x_{i j} A_{i j}) = 1
@@ -138,7 +32,7 @@ public class Solver {
     public static MultipleBoard solvePuzzle() {
         // STEP 1: Create the comboBoard
         // Create an array of boards where only one tile is clicked
-        oneTileClickedBoards = new MultipleBoard[Board.getSize() * Board.getSize()];
+        MultipleBoard[] oneTileClickedBoards = new MultipleBoard[Board.getSize() * Board.getSize()];
         for (int i = 0; i < oneTileClickedBoards.length; i++) {
             oneTileClickedBoards[i] = new MultipleBoard(Board.getSize(), Board.getSize());
             oneTileClickedBoards[i].flipCurrAndAdjLights(i / Board.getSize(), i % Board.getSize());
@@ -148,6 +42,8 @@ public class Solver {
         // (where 0 <= row < Board.getSize(), 0 <= col < Board.getSize())
         // of each board in the oneTileClickedBoards
         // will form the row (boardSize * row + col) of the comboBoard
+        MultipleBoard comboBoard = new MultipleBoard(Board.getSize() * Board.getSize(), 
+                                                     Board.getSize() * Board.getSize());       
         for (int row = 0; row < Board.getSize(); row++) {
             for (int col = 0; col < Board.getSize(); col++) {
                 for (int i = 0; i < oneTileClickedBoards.length; i++) {
@@ -180,6 +76,16 @@ public class Solver {
         MultipleBoard comboBoardRREF = resultBoards[0];
         MultipleBoard solutionBoard = resultBoards[1];
 
+        /* Check if the givenBoard is solvable, that is the augmented matrix
+         * formed from the comboBoardRREF and solutionBoard is consistent.
+         * If the givenBoard is solvable, then return the solutionBoard
+         * in an m x n format (not the one column format).
+         * If the givenBoard is NOT solvable then return null.
+         */
+        if (isSolvable(comboBoardRREF, solutionBoard)) {
+            return reverseOneColumnize(solutionBoard, Board.getSize(), Board.getSize());
+        }
+
         return null;
     }
 
@@ -194,7 +100,7 @@ public class Solver {
         //      [0 1 0 0 | 1]
         //      [0 0 0 1 | 0]
         //      [0 0 0 0 | 1]
-        //      -> unsolvable since the augmented matrix has no solution
+        //      -> unsolvable since the augmented matrix is inconsistent (has no solution)
 
         // A counter to keep track the number of lights off in a row
         int numLightOffInARow = 0;
