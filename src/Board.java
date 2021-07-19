@@ -1,5 +1,6 @@
 package src;
 
+import DDO_Solver.Solver;
 
 /**
  * Model Board
@@ -22,9 +23,11 @@ public class Board {
         Board.moves = 0;
 
         // Randomly generate each tile to be on or off
+        // If all the tiles are light on or the board is unsolvable,
+        // regenerate the board
         do {
             Board.generateBoard();
-        } while (Board.allTilesOn());
+        } while (Board.allTilesOn() || !Solver.isSolvable());
         
     }
 

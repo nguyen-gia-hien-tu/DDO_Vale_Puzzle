@@ -4,6 +4,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import DDO_Solver.MultipleBoard;
+import DDO_Solver.Solver;
+
 
 /**
  * GUI
@@ -14,6 +17,7 @@ public class GUI {
     private JButton newGameButton;
     private JButton editButton;
     private JButton playButton;
+    private JButton solveButton;
     private JLabel winningLabel;
     private JLabel moveLabel;
     private JComboBox<String> sizeChoices;
@@ -27,6 +31,7 @@ public class GUI {
         drawNewGameButton();
         drawEditButton();
         drawPlayButton();
+        drawSolveButton();
         drawChoicesComboBox();
         closeFrame();
     }
@@ -83,7 +88,7 @@ public class GUI {
     // Add "New Game" button
     public void drawNewGameButton() {
         newGameButton = new JButton("New Game");
-        newGameButton.setBounds(90, 20, 100, 40);
+        newGameButton.setBounds(30, 20, 100, 40);
         newGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Generate a new board
@@ -94,8 +99,13 @@ public class GUI {
 
                 // Reset the main (game) buttons background color
                 for (int row = 0; row < Board.getSize(); row++) {
-                    for (int col = 0; col < Board.getSize(); col++) {                        
+                    for (int col = 0; col < Board.getSize(); col++) {
+                        // Redraw the main (game) buttons background color                   
                         setSquareButtonBackgroundCol(row, col);
+
+                        // Reset the color of the text to black
+                        // (if the text color is red when the "Solve" button is clicked)
+                        tileButtons[row][col].setForeground(Color.black);
 
                         // Enable main (square) buttons
                         tileButtons[row][col].setEnabled(true);
@@ -118,12 +128,16 @@ public class GUI {
     // Add "Edit" button
     public void drawEditButton() {
         editButton = new JButton("Edit");
-        editButton.setBounds(200, 20, 100, 40);
+        editButton.setBounds(140, 20, 100, 40);
         editButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int row = 0; row < Board.getSize(); row++) {
                     for (int col = 0; col < Board.getSize(); col++) {
                         rmAllALAndAddAL(row, col, "Edit");
+
+                        // Reset the color of the text to black
+                        // (if the text color is red when the "Solve" button is clicked)
+                        tileButtons[row][col].setForeground(Color.black);
                     }
                 }
             }
@@ -135,7 +149,7 @@ public class GUI {
     // Add "Play" button
     public void drawPlayButton() {
         playButton = new JButton("Play");
-        playButton.setBounds(310, 20, 100, 40);
+        playButton.setBounds(250, 20, 100, 40);
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int row = 0; row < Board.getSize(); row++) {
@@ -146,6 +160,27 @@ public class GUI {
             }
         });
         frame.add(playButton);
+    }
+
+    
+    // Add "Solve" button
+    public void drawSolveButton() {
+        solveButton = new JButton("Solve");
+        solveButton.setBounds(360, 20, 100, 40);
+        solveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MultipleBoard solvedBoard = Solver.solvePuzzle();
+                for (int row = 0; row < solvedBoard.getLengthSize(); row++) {
+                    for (int col = 0; col < solvedBoard.getWidthSize(); col++) {
+                        if (solvedBoard.getBoard(row, col).isLightOn()) {
+                            // Set the text color of the button to red
+                            tileButtons[row][col].setForeground(Color.red);
+                        }
+                    }
+                }
+            }
+        });
+        frame.add(solveButton);
     }
 
 
@@ -256,10 +291,10 @@ public class GUI {
             // Update displaying the number of moves
             moveLabel.setText("Moves: " + String.valueOf(Board.getMoves()));
 
-            // Flip the light of the current button
+            // Flip only the light of the current button
             Board.flipLight(this.currentRow, this.currentCol);
 
-            // Display the color of that button again
+            // Re-display the color of that button
             setSquareButtonBackgroundCol(this.currentRow, this.currentCol);
         }
     }

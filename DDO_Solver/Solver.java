@@ -90,6 +90,12 @@ public class Solver {
     }
 
 
+    // Function for Board.java file
+    public static boolean isSolvable() {
+        return solvePuzzle() != null;
+    }
+
+
 
     // Check if the board is solvable
     public static boolean isSolvable(MultipleBoard comboBoardRREF, MultipleBoard solutionBoard) {
