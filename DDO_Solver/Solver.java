@@ -45,18 +45,18 @@ public class Solver {
         System.out.println("\nOriginal Board:");
         printBoard(testBoard);
 
-        // MultipleBoard revLightBoard = reverseLightBoard(testBoard);
-        // MultipleBoard oneColumnBoard = oneColumnize(testBoard);
-        // MultipleBoard oneColumnRevLightBoard = oneColumnize(revLightBoard);
-        // System.out.println();
-        // System.out.println("One Column Light Board:");
-        // printBoard(oneColumnBoard);
+        MultipleBoard revLightBoard = reverseLightBoard(testBoard);
+        MultipleBoard oneColumnBoard = oneColumnize(testBoard);
+        MultipleBoard oneColumnRevLightBoard = oneColumnize(revLightBoard);
+        System.out.println();
+        System.out.println("One Column Light Board:");
+        printBoard(oneColumnBoard);
         // // System.out.println("One Colum Reverse Light Board:");
         // // printBoard(oneColumnRevLightBoard);
 
-        // binaryRREFTwoMatrices(comboBoard, oneColumnBoard);
-        // System.out.println("One Column Board After RREF:");
-        // printBoard(oneColumnBoard);
+        binaryRREFTwoMatrices(comboBoard, oneColumnBoard);
+        System.out.println("One Column Board After RREF:");
+        printBoard(oneColumnBoard);
 
         // binaryRREFTwoMatrices(testBoard, oneColumnRevLightBoard);
         // System.out.println("One Column Reverse Light Board After RREF:");
