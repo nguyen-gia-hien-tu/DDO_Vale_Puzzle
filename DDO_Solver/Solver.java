@@ -41,8 +41,8 @@ public class Solver {
         // // Test oneColumnized(revLightBoard)
         // testOneColumnizeRevLight(boardSize);
 
-        // Test binaryRREF function
-        testBinaryRREF(boardSize);
+        // // Test binaryRREF function
+        // testBinaryRREF(boardSize);
 
     }
 
@@ -176,18 +176,143 @@ public class Solver {
         }
     }
 
+
+    private static void binaryRREFTwoMatrices(MultipleBoard boardA, MultipleBoard boardB) {
+        int currentRow = 0;
+        int currentCol = 0;
+
+        while (currentRow < boardA.getLengthSize() && currentCol < boardA.getWidthSize()) {
+            // If the pivot tile is not light on
+            while (currentCol < boardA.getWidthSize() && 
+                   !boardA.getBoard(currentRow, currentCol).isLightOn()) {
+                // Find in the later rows where that column is 1 (light on)
+                for (int laterRow = currentRow + 1; laterRow < boardA.getLengthSize(); laterRow++) {
+                    // If we found the wanted row
+                    if (boardA.getBoard(laterRow, currentCol).isLightOn()) {
+                        // Swap the row "row" with the row "laterRow"
+                        for (int col = 0; col < boardA.getWidthSize(); col++) {
+                            boolean temp = boardA.getBoard(currentRow, col).getLightState();
+                            boardA.setBoard(currentRow, col, boardA.getBoard(laterRow, col).getLightState());
+                            boardA.setBoard(laterRow, col, temp);
+                        }
+                        // Do the same for board (matrix) B
+                        for (int col = 0; col <boardB.getWidthSize(); col++) {
+                            boolean temp = boardB.getBoard(currentRow, col).getLightState();
+                            boardB.setBoard(currentRow, col, boardB.getBoard(laterRow, col).getLightState());
+                            boardB.setBoard(laterRow, col, temp);
+                        }
+                        // Break the loop since we don't need to find anymore
+                        break;
+                    }
+                }
+
+                // If the pivot tile is still not light on after finding in later rows,
+                // it means the whole column starting from currentRow down is not light on
+                if (!boardA.getBoard(currentRow, currentCol).isLightOn()) {
+                    // Move to the next column
+                    currentCol++;
+                } else {
+                    // If the pivot tile is light on, break the loop
+                    break;
+                }                
+            }
+
+            // If we pass the end of the column, then break the loop
+            if (currentCol >= boardA.getWidthSize())
+                break;
+
+            // Xor the all other rows whose currentCol is 1
+            // to make only the currentRow has 1 (light on) at currentCol
+            for (int otherRow = 0; otherRow < boardA.getLengthSize(); otherRow++) {
+                if (otherRow != currentRow && boardA.getBoard(otherRow, currentCol).isLightOn()) {
+                    for (int col = 0; col < boardA.getWidthSize(); col++) {
+                        boardA.setBoard(otherRow, col, 
+                                        boardA.getBoard(otherRow, col).getLightState() 
+                                        ^ boardA.getBoard(currentRow, col).getLightState());
+                    }
+                }
+            }
+
+            // Increase currentRow
+            currentRow++;
+
+            System.out.println("Board A:");
+            printBoard(boardA);
+            System.out.println("Board B:");
+            printBoard(boardB);
+        }
+    }
+
+
     private static void testBinaryRREF(int boardSize) {
         MultipleBoard testBoard = new MultipleBoard(boardSize, boardSize);
-        testBoard.setBoard(0, 0, true);
+
+        // [1 0 1]
+        // [0 0 1]
+        // [1 1 1]
+        // testBoard.setBoard(0, 0, true);
+        // testBoard.setBoard(0, 2, true);
+        // testBoard.setBoard(1, 2, true);
+        // testBoard.setBoard(2, 0, true);
+        // testBoard.setBoard(2, 1, true);
+        // testBoard.setBoard(2, 2, true);
+        // System.out.println("\nOriginal Board:");
+        // printBoard(testBoard);
+        // System.out.println("\nBinary RREF Board:");
+        // binaryRREF(testBoard);
+
+        // [0 0 1]
+        // [0 1 0]
+        // [1 0 0]
+        // testBoard = new MultipleBoard(boardSize, boardSize);
+        // testBoard.setBoard(0, 2, true);
+        // testBoard.setBoard(1, 1, true);
+        // testBoard.setBoard(2, 0, true);
+        // System.out.println("\nOriginal Board:");
+        // printBoard(testBoard);
+        // System.out.println("\nBinary RREF Board:");
+        // binaryRREF(testBoard);
+
+        // [1 1 0]
+        // [0 1 0]
+        // [0 1 1]
+        // testBoard = new MultipleBoard(boardSize, boardSize);
+        // testBoard.setBoard(0, 0, true);
+        // testBoard.setBoard(0, 1, true);
+        // testBoard.setBoard(1, 1, true);
+        // testBoard.setBoard(2, 1, true);
+        // testBoard.setBoard(2, 2, true);
+        // System.out.println("\nOriginal Board:");
+        // printBoard(testBoard);
+        // System.out.println("\nBinary RREF Board:");
+        // binaryRREF(testBoard);
+
+        // [0 1 1 | 0]
+        // [0 1 1 | 0]
+        // [1 1 1 | 1]
+        testBoard = new MultipleBoard(boardSize, boardSize);
+        testBoard.setBoard(0, 1, true);
         testBoard.setBoard(0, 2, true);
+        testBoard.setBoard(1, 1, true);
         testBoard.setBoard(1, 2, true);
         testBoard.setBoard(2, 0, true);
         testBoard.setBoard(2, 1, true);
         testBoard.setBoard(2, 2, true);
+
+        MultipleBoard testBoard2 = new MultipleBoard(3, 1);
+        testBoard2.setBoard(2, 0, true);
+
         System.out.println("\nOriginal Board:");
+        System.out.println("Board A:");
         printBoard(testBoard);
+        System.out.println("Board B:");
+        printBoard(testBoard2);
         System.out.println("\nBinary RREF Board:");
+        System.out.println("Board A:");
         binaryRREF(testBoard);
+        System.out.println("Board B:");
+        binaryRREF(testBoard2);
+        
     }
 
 }
