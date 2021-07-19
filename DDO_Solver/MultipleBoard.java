@@ -1,5 +1,6 @@
 package DDO_Solver;
 
+import src.Board;
 import src.Tile;
 
 public class MultipleBoard {
@@ -130,6 +131,18 @@ public class MultipleBoard {
     public void flipLight(int r, int c) {
         Tile tile = this.board[r][c];
         tile.setLightState(!tile.getLightState());
+    }
+
+
+    // Convert from Board to MultipleBoard
+    public MultipleBoard convertFromBoardToMultipleBoard() {
+        MultipleBoard multipleBoard = new MultipleBoard(Board.getSize(), Board.getSize());
+        for (int row = 0; row < Board.getSize(); row++) {
+            for (int col = 0; col < Board.getSize(); col++) {
+                multipleBoard.setBoard(row, col, Board.getBoard(row, col).getLightState());
+            }
+        }
+        return multipleBoard;
     }
 
 
