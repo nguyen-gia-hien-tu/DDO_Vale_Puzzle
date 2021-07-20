@@ -158,5 +158,73 @@ public class TestingSolver {
             }
             System.out.println();
         }
-    }    
+    } 
+
+
+    // Unused Function from Solver.java (moved to here)
+    // Binary Reduced Row Echelon
+    public static MultipleBoard binaryRREF(MultipleBoard givenBoard) {
+        // Copy the givenBoard into board
+        MultipleBoard board = new MultipleBoard(givenBoard.getLengthSize(), givenBoard.getWidthSize());
+        for (int row = 0; row < givenBoard.getLengthSize(); row++) {
+            for (int col = 0; col < givenBoard.getWidthSize(); col++) {
+                board.setBoard(row, col, givenBoard.getBoard(row, col).getLightState());
+            }
+        }
+
+        int currentRow = 0;
+        int currentCol = 0;
+
+        while (currentRow < board.getLengthSize() && currentCol < board.getWidthSize()) {
+            // If the pivot tile is not light on
+            while (currentCol < board.getWidthSize() && 
+                   !board.getBoard(currentRow, currentCol).isLightOn()) {
+                // Find in the later rows where that column is 1 (light on)
+                for (int laterRow = currentRow + 1; laterRow < board.getLengthSize(); laterRow++) {
+                    // If we found the wanted row
+                    if (board.getBoard(laterRow, currentCol).isLightOn()) {
+                        // Swap the row "row" with the row "laterRow"
+                        for (int col = 0; col < board.getWidthSize(); col++) {
+                            boolean temp = board.getBoard(currentRow, col).getLightState();
+                            board.setBoard(currentRow, col, board.getBoard(laterRow, col).getLightState());
+                            board.setBoard(laterRow, col, temp);
+                        }
+                        // Break the loop since we don't need to find anymore
+                        break;
+                    }
+                }
+
+                // If the pivot tile is still not light on after finding in later rows,
+                // it means the whole column starting from currentRow down is not light on
+                if (!board.getBoard(currentRow, currentCol).isLightOn()) {
+                    // Move to the next column
+                    currentCol++;
+                } else {
+                    // If the pivot tile is light on, break the loop
+                    break;
+                }                
+            }
+
+            // If we pass the end of the column, then break the loop
+            if (currentCol >= board.getWidthSize())
+                break;
+
+            // Xor the all other rows whose currentCol is 1
+            // to make only the currentRow has 1 (light on) at currentCol
+            for (int otherRow = 0; otherRow < board.getLengthSize(); otherRow++) {
+                if (otherRow != currentRow && board.getBoard(otherRow, currentCol).isLightOn()) {
+                    for (int col = 0; col < board.getWidthSize(); col++) {
+                        board.setBoard(otherRow, col, 
+                                       board.getBoard(otherRow, col).getLightState() 
+                                       ^ board.getBoard(currentRow, col).getLightState());
+                    }
+                }
+            }
+
+            // Increase currentRow
+            currentRow++;
+        }
+
+        return board;
+    }
 }

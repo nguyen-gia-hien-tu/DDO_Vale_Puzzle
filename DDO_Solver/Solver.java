@@ -3,32 +3,33 @@ package DDO_Solver;
 import src.Board;
 
 public class Solver {
-    // Solve the puzzle
-    // The idea:
-    //      L + sum_{i, j} (x_{i j} A_{i j}) = 1
-    // where L       is the given board,
-    //       A_{i j} is the board where only the tile
-    //               at row i, column j is clicked
-    //       x_{i j} is the number of times the board
-    //               A_{i j} needs to appear. In this case,
-    //               x_{i j} is either 0 or 1 since we only
-    //               need to click a tile zero or one time.
-    //               Clicking the tile 2 times is the same
-    //               as not clicking the tile
-    //       1       is the matrix where all entries are 1 (light on)  
-    // x_{i j} is the ones we need to find
-    // Solve the equation:
-    //      sum_{i, j} (x_{i j} A_{i j}) = 1 - L
-    // Hence, to solve this equation, we need to solve the augmented matrix:
-    //      A x = 1 - L
-    // where each entry at row r, column c of the matrices A_{i j}
-    // form the row (A_{i j}.length * r + c) in the big matrix A
-    // where A_{i j}.length is the number of row in a matrix A_{i j}
-    // Note: the number of rows in all matrices A_{i j} is the same
-    //       as well as the number of columns
-    // 1 - L is in the one column format
-    // Note: 1 - L is the matrix where all entries in the matrix L
-    //       is flipped (0 -> 1, 1 -> 0)
+    /* Solve the puzzle
+     * The idea:
+     *       L + sum_{i, j} (x_{i j} A_{i j}) = 1
+     * where L       is the given board,
+     *       A_{i j} is the board where only the tile
+     *               at row i, column j is clicked
+     *       x_{i j} is the number of times the board
+     *               A_{i j} needs to appear. In this case,
+     *               x_{i j} is either 0 or 1 since we only
+     *               need to click a tile zero or one time.
+     *               Clicking the tile 2 times is the same
+     *               as not clicking the tile
+     *       1       is the matrix where all entries are 1 (light on)  
+     * x_{i j} is the ones we need to find
+     * Solve the equation:
+     *      sum_{i, j} (x_{i j} A_{i j}) = 1 - L
+     * Hence, to solve this equation, we need to solve the augmented matrix:
+     *      A x = 1 - L
+     * where each entry at row r, column c of the matrices A_{i j}
+     * form the row (A_{i j}.length * r + c) in the big matrix A
+     * where A_{i j}.length is the number of row in a matrix A_{i j}
+     * Note: the number of rows in all matrices A_{i j} is the same
+     *       as well as the number of columns
+     * 1 - L is in the one column format
+     * Note: 1 - L is the matrix where all entries in the matrix L
+     *       is flipped (0 -> 1, 1 -> 0)
+     */
     public static MultipleBoard solvePuzzle() {
         // STEP 1: Create the comboBoard
         // Create an array of boards where only one tile is clicked
@@ -38,10 +39,11 @@ public class Solver {
             oneTileClickedBoards[i].flipCurrAndAdjLights(i / Board.getSize(), i % Board.getSize());
         }
 
-        // To create comboBoard, the light state at position [row][col]
-        // (where 0 <= row < Board.getSize(), 0 <= col < Board.getSize())
-        // of each board in the oneTileClickedBoards
-        // will form the row (boardSize * row + col) of the comboBoard
+        /* To create comboBoard, the light state at position [row][col]
+         * (where 0 <= row < Board.getSize(), 0 <= col < Board.getSize())
+         * of each board in the oneTileClickedBoards
+         * will form the row (boardSize * row + col) of the comboBoard 
+         */
         MultipleBoard comboBoard = new MultipleBoard(Board.getSize() * Board.getSize(), 
                                                      Board.getSize() * Board.getSize());       
         for (int row = 0; row < Board.getSize(); row++) {
@@ -67,11 +69,12 @@ public class Solver {
         // One Columnize the revLightBoard
         MultipleBoard oneColRevLightBoard = oneColumnize(revLightBoard);
 
-        // STEP 3: Perform reduced row echelon (in modulus 2) on comboBoard
-        //         and apply the same operation on each step to the oneColRevLightBoard.
-        //         The result of the onColRevLightBoard is the expected "solution" board
-        //         before checking for no solution (inconsistent in the matrices)
-        // Perform binaryRREFTwoMatrices on the comboBoard and the oneColRevLightBoard
+        /* STEP 3: Perform reduced row echelon (in modulus 2) on comboBoard
+         * and apply the same operation on each step to the oneColRevLightBoard.
+         * The result of the onColRevLightBoard is the expected "solution" board
+         * before checking for no solution (inconsistent in the matrices)
+         * Perform binaryRREFTwoMatrices on the comboBoard and the oneColRevLightBoard
+         */
         MultipleBoard[] resultBoards = binaryRREFTwoMatrices(comboBoard, oneColRevLightBoard);
         MultipleBoard comboBoardRREF = resultBoards[0];
         MultipleBoard solutionBoard = resultBoards[1];
@@ -140,11 +143,11 @@ public class Solver {
 
     // Turn the m x n board into an (mxn) x 1 board (a one column board)
     public static MultipleBoard oneColumnize(MultipleBoard board) {
-        int rowInc = 0;
         MultipleBoard oneColumnBoard = new MultipleBoard(board.getLengthSize() * board.getWidthSize(), 1);
         for (int row = 0; row < board.getLengthSize(); row++) {
             for (int col = 0; col < board.getWidthSize(); col++) {
-                oneColumnBoard.setBoard(rowInc++, 0, board.getBoard(row, col).getLightState());
+                oneColumnBoard.setBoard(board.getLengthSize() * row + col, 0, 
+                                        board.getBoard(row, col).getLightState());
             }
         }
         return oneColumnBoard;
@@ -171,73 +174,6 @@ public class Solver {
             }
         }
         return revLightBoard;
-    }
-
-
-    // Binary Reduced Row Echelon
-    public static MultipleBoard binaryRREF(MultipleBoard givenBoard) {
-        // Copy the givenBoard into board
-        MultipleBoard board = new MultipleBoard(givenBoard.getLengthSize(), givenBoard.getWidthSize());
-        for (int row = 0; row < givenBoard.getLengthSize(); row++) {
-            for (int col = 0; col < givenBoard.getWidthSize(); col++) {
-                board.setBoard(row, col, givenBoard.getBoard(row, col).getLightState());
-            }
-        }
-
-        int currentRow = 0;
-        int currentCol = 0;
-
-        while (currentRow < board.getLengthSize() && currentCol < board.getWidthSize()) {
-            // If the pivot tile is not light on
-            while (currentCol < board.getWidthSize() && 
-                   !board.getBoard(currentRow, currentCol).isLightOn()) {
-                // Find in the later rows where that column is 1 (light on)
-                for (int laterRow = currentRow + 1; laterRow < board.getLengthSize(); laterRow++) {
-                    // If we found the wanted row
-                    if (board.getBoard(laterRow, currentCol).isLightOn()) {
-                        // Swap the row "row" with the row "laterRow"
-                        for (int col = 0; col < board.getWidthSize(); col++) {
-                            boolean temp = board.getBoard(currentRow, col).getLightState();
-                            board.setBoard(currentRow, col, board.getBoard(laterRow, col).getLightState());
-                            board.setBoard(laterRow, col, temp);
-                        }
-                        // Break the loop since we don't need to find anymore
-                        break;
-                    }
-                }
-
-                // If the pivot tile is still not light on after finding in later rows,
-                // it means the whole column starting from currentRow down is not light on
-                if (!board.getBoard(currentRow, currentCol).isLightOn()) {
-                    // Move to the next column
-                    currentCol++;
-                } else {
-                    // If the pivot tile is light on, break the loop
-                    break;
-                }                
-            }
-
-            // If we pass the end of the column, then break the loop
-            if (currentCol >= board.getWidthSize())
-                break;
-
-            // Xor the all other rows whose currentCol is 1
-            // to make only the currentRow has 1 (light on) at currentCol
-            for (int otherRow = 0; otherRow < board.getLengthSize(); otherRow++) {
-                if (otherRow != currentRow && board.getBoard(otherRow, currentCol).isLightOn()) {
-                    for (int col = 0; col < board.getWidthSize(); col++) {
-                        board.setBoard(otherRow, col, 
-                                       board.getBoard(otherRow, col).getLightState() 
-                                       ^ board.getBoard(currentRow, col).getLightState());
-                    }
-                }
-            }
-
-            // Increase currentRow
-            currentRow++;
-        }
-
-        return board;
     }
 
 
@@ -292,7 +228,7 @@ public class Solver {
                 // If the pivot tile is still not light on after finding and swapping in later rows,
                 // it means the whole column starting from currentRow down is not light on
                 if (!boardA.getBoard(currentRow, currentCol).isLightOn()) {
-                    // Move to the next column
+                    // Move to the next column, stay on the same row
                     currentCol++;
                 } else {
                     // If the pivot tile is light on, break the loop
@@ -328,16 +264,5 @@ public class Solver {
         }
 
         return new MultipleBoard[] {boardA, boardB};
-    }
-
-
-    // Print the board
-    private static void printBoard(MultipleBoard board) {
-        for (int row = 0; row < board.getLengthSize(); row++) {
-            for (int col = 0; col < board.getWidthSize(); col++) {
-                System.out.print(board.getBoard(row, col).isLightOn() ? "1 " : "0 ");
-            }
-            System.out.println();
-        }
     }
 }

@@ -19,6 +19,7 @@ public class GUI {
     private JButton playButton;
     private JButton solveButton;
     private JLabel winningLabel;
+    private JLabel noSolutionLabel;
     private JLabel moveLabel;
     private JComboBox<String> sizeChoices;
 
@@ -27,6 +28,7 @@ public class GUI {
         openFrame();
         drawMoveLabel();
         drawWinningLabel();
+        drawNoSolutionLabel();
         drawTileButtons();
         drawNewGameButton();
         drawEditButton();
@@ -63,6 +65,17 @@ public class GUI {
         winningLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 90);
         winningLabel.setVisible(false);
         frame.add(winningLabel);
+    }
+
+
+    // Add "No Solution" label if there is no solution for the board
+    public void drawNoSolutionLabel() {
+        noSolutionLabel = new JLabel("NO SOLUTION!");
+        noSolutionLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
+        noSolutionLabel.setSize(200, 100);
+        noSolutionLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 90);
+        noSolutionLabel.setVisible(false);
+        frame.add(noSolutionLabel);
     }
 
 
@@ -107,6 +120,9 @@ public class GUI {
                         // (if the text color is red when the "Solve" button is clicked)
                         tileButtons[row][col].setForeground(Color.black);
 
+                        // Hide the noSolutionLabel
+                        noSolutionLabel.setVisible(false);
+
                         // Enable main (square) buttons
                         tileButtons[row][col].setEnabled(true);
 
@@ -138,6 +154,9 @@ public class GUI {
                         // Reset the color of the text to black
                         // (if the text color is red when the "Solve" button is clicked)
                         tileButtons[row][col].setForeground(Color.black);
+
+                        // Hide the noSolutionLabel
+                        noSolutionLabel.setVisible(false);
                     }
                 }
             }
@@ -170,11 +189,19 @@ public class GUI {
         solveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MultipleBoard solvedBoard = Solver.solvePuzzle();
-                for (int row = 0; row < solvedBoard.getLengthSize(); row++) {
-                    for (int col = 0; col < solvedBoard.getWidthSize(); col++) {
-                        if (solvedBoard.getBoard(row, col).isLightOn()) {
-                            // Set the text color of the button to red
-                            tileButtons[row][col].setForeground(Color.red);
+
+                // If there is NO solution to the board
+                if (solvedBoard == null) {
+                    // Print "NO SOLUTION" out
+                    noSolutionLabel.setVisible(true);
+                } else {
+                    // If there is a solution to the board
+                    for (int row = 0; row < solvedBoard.getLengthSize(); row++) {
+                        for (int col = 0; col < solvedBoard.getWidthSize(); col++) {
+                            if (solvedBoard.getBoard(row, col).isLightOn()) {
+                                // Set the text color of the button to red
+                                tileButtons[row][col].setForeground(Color.red);
+                            }
                         }
                     }
                 }
