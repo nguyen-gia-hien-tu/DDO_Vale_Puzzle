@@ -52,7 +52,7 @@ public class GUI {
     public void drawMoveLabel() {
         moveLabel = new JLabel("Moves: " + String.valueOf(Board.getMoves()));
         moveLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
-        moveLabel.setBounds(40, 175, 100, 50);
+        moveLabel.setBounds(50, 175, 100, 50);
         frame.add(moveLabel);
     }
 
@@ -87,8 +87,8 @@ public class GUI {
         for (int row = 0; row < Board.getSize(); row++) {
             for (int col = 0; col < Board.getSize(); col++) {
                 tileButtons[row][col] = new JButton(String.valueOf(counter++));
-                tileButtons[row][col].setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
-                tileButtons[row][col].setBounds(40 + squareSize * col, 225 + squareSize * row,
+                tileButtons[row][col].setFont(new Font(Font.SANS_SERIF, Font.BOLD, (squareSize + 5) / 5));
+                tileButtons[row][col].setBounds(50 + squareSize * col, 225 + squareSize * row,
                                                 squareSize, squareSize);
                 setSquareButtonBackgroundCol(row, col);
                 tileButtons[row][col].addActionListener(new PlayButtonActionListener(row, col));
@@ -213,7 +213,7 @@ public class GUI {
 
     // Add choices drop down
     public void drawChoicesComboBox() {
-        String[] sizeChoicesString = { "3 x 3", "4 x 4", "5 x 5" };
+        String[] sizeChoicesString = { "3 x 3", "4 x 4", "5 x 5", "6 x 6", "7 x 7", "8 x 8", "9 x 9" };
         sizeChoices = new JComboBox<String>(sizeChoicesString);
         sizeChoices.setSize(60, 20);
         sizeChoices.setLocation((frame.getWidth() - sizeChoices.getWidth()) / 2, 75);
@@ -222,21 +222,7 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 JComboBox<String> cb = (JComboBox<String>) e.getSource();             
                 String sizeString = (String) cb.getSelectedItem();
-                int size;
-                switch (sizeString.charAt(0)) {
-                    case '3':
-                        size = 3;
-                        break;
-                    case '4':
-                        size = 4;
-                        break;
-                    case '5':
-                        size = 5;
-                        break;
-                    default:
-                        size = 3;
-                        break;
-                }
+                int size = Character.getNumericValue(sizeString.charAt(0));
                 
                 // Remove current tile buttons and update the frame GUI
                 for (JButton[] tileButtonsArr : tileButtons) {
