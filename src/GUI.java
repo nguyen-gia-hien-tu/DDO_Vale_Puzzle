@@ -123,8 +123,27 @@ public class GUI {
         // Add ActionListener to the instructionButton
         instructionButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // Add a new frame for instruction
                 JFrame instructionFrame = new JFrame("Instruction");
                 instructionFrame.setSize(500, 700);
+
+                // Add a panel
+                JPanel panel = new JPanel(new BorderLayout());
+
+                // Add a welcome to the instructionFrame
+                JLabel welcomeInstructLabel = new JLabel("Welcome to the DDO Vale Puzzle");
+                welcomeInstructLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
+                welcomeInstructLabel.setLocation(10, 10);
+                panel.add(welcomeInstructLabel, BorderLayout.CENTER);
+
+                // Add "Instruction" text to the instructionFrame
+                JLabel instructionLabel = new JLabel("Instruction");
+                instructionLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
+                instructionLabel.setSize(200, 50);
+                instructionLabel.setLocation(100, 100);
+                panel.add(instructionLabel, BorderLayout.PAGE_LEFT);
+
+                // Close the instructionFrame
                 instructionFrame.setResizable(false);
                 instructionFrame.setLayout(null);
                 instructionFrame.setBackground(Color.white);
