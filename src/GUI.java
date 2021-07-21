@@ -201,6 +201,8 @@ public class GUI {
                             if (solvedBoard.getBoard(row, col).isLightOn()) {
                                 // Set the text color of the button to red
                                 tileButtons[row][col].setForeground(Color.red);
+                            } else {
+                                tileButtons[row][col].setForeground(Color.black);
                             }
                         }
                     }
