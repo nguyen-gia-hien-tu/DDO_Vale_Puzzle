@@ -2,6 +2,7 @@ package src;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.*;
 import javax.swing.*;
 
 import DDO_Solver.MultipleBoard;
@@ -13,14 +14,15 @@ import DDO_Solver.Solver;
  */
 public class GUI {
     private JFrame frame;
+    private JLabel moveLabel;
+    private JLabel winningLabel;
+    private JLabel noSolutionLabel;
+    private JLabel instructionLabel;
     private JButton[][] tileButtons;
     private JButton newGameButton;
     private JButton editButton;
     private JButton playButton;
-    private JButton solveButton;
-    private JLabel winningLabel;
-    private JLabel noSolutionLabel;
-    private JLabel moveLabel;
+    private JButton solveButton;    
     private JComboBox<String> sizeChoices;
 
 
@@ -29,6 +31,7 @@ public class GUI {
         drawMoveLabel();
         drawWinningLabel();
         drawNoSolutionLabel();
+        drawInstructionLabel();
         drawTileButtons();
         drawNewGameButton();
         drawEditButton();
@@ -62,7 +65,7 @@ public class GUI {
         winningLabel = new JLabel("YOU WON!!!");
         winningLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
         winningLabel.setSize(150, 100);
-        winningLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 90);
+        winningLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 100);
         winningLabel.setVisible(false);
         frame.add(winningLabel);
     }
@@ -73,9 +76,25 @@ public class GUI {
         noSolutionLabel = new JLabel("NO SOLUTION!");
         noSolutionLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 25));
         noSolutionLabel.setSize(200, 100);
-        noSolutionLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 90);
+        noSolutionLabel.setLocation((frame.getWidth() - winningLabel.getWidth()) / 2, 100);
         noSolutionLabel.setVisible(false);
         frame.add(noSolutionLabel);
+    }
+
+    // Add Instruction (question mark: ?) label for instruction
+    public void drawInstructionLabel() {
+        ImageIcon imageIcon = new ImageIcon("Images/cropped_blue_question_mark.png");
+        // Get the image from the imageIcon
+        Image image = imageIcon.getImage();
+        // Resize the image
+        Image newImage = image.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(newImage);
+
+        System.out.println(imageIcon.getIconHeight() + " " + imageIcon.getIconWidth());
+        instructionLabel = new JLabel(imageIcon);
+        instructionLabel.setSize(imageIcon.getIconHeight(), imageIcon.getIconWidth());
+        instructionLabel.setLocation(frame.getWidth() - 40, 5);;
+        frame.add(instructionLabel);
     }
 
 
@@ -101,7 +120,7 @@ public class GUI {
     // Add "New Game" button
     public void drawNewGameButton() {
         newGameButton = new JButton("New Game");
-        newGameButton.setBounds(30, 20, 100, 40);
+        newGameButton.setBounds(30, 30, 100, 40);
         newGameButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Generate a new board
@@ -144,7 +163,7 @@ public class GUI {
     // Add "Edit" button
     public void drawEditButton() {
         editButton = new JButton("Edit");
-        editButton.setBounds(140, 20, 100, 40);
+        editButton.setBounds(140, 30, 100, 40);
         editButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int row = 0; row < Board.getSize(); row++) {
@@ -168,7 +187,7 @@ public class GUI {
     // Add "Play" button
     public void drawPlayButton() {
         playButton = new JButton("Play");
-        playButton.setBounds(250, 20, 100, 40);
+        playButton.setBounds(250, 30, 100, 40);
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int row = 0; row < Board.getSize(); row++) {
@@ -185,7 +204,7 @@ public class GUI {
     // Add "Solve" button
     public void drawSolveButton() {
         solveButton = new JButton("Solve");
-        solveButton.setBounds(360, 20, 100, 40);
+        solveButton.setBounds(360, 30, 100, 40);
         solveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 MultipleBoard solvedBoard = Solver.solvePuzzle();
@@ -218,7 +237,7 @@ public class GUI {
         String[] sizeChoicesString = { "3 x 3", "4 x 4", "5 x 5", "6 x 6", "7 x 7", "8 x 8", "9 x 9" };
         sizeChoices = new JComboBox<String>(sizeChoicesString);
         sizeChoices.setSize(60, 20);
-        sizeChoices.setLocation((frame.getWidth() - sizeChoices.getWidth()) / 2, 75);
+        sizeChoices.setLocation((frame.getWidth() - sizeChoices.getWidth()) / 2, 85);
         sizeChoices.setSelectedIndex(0);
         sizeChoices.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
