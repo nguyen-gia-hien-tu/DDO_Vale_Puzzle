@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.*;
 import javax.swing.*;
+import javax.swing.border.*;
 
 import DDO_Solver.MultipleBoard;
 import DDO_Solver.Solver;
@@ -17,8 +18,8 @@ public class GUI {
     private JLabel moveLabel;
     private JLabel winningLabel;
     private JLabel noSolutionLabel;
-    private JLabel instructionLabel;
     private JButton[][] tileButtons;
+    private JButton instructionButton;
     private JButton newGameButton;
     private JButton editButton;
     private JButton playButton;
@@ -31,8 +32,8 @@ public class GUI {
         drawMoveLabel();
         drawWinningLabel();
         drawNoSolutionLabel();
-        drawInstructionLabel();
         drawTileButtons();
+        drawInstructionButton();
         drawNewGameButton();
         drawEditButton();
         drawPlayButton();
@@ -81,22 +82,6 @@ public class GUI {
         frame.add(noSolutionLabel);
     }
 
-    // Add Instruction (question mark: ?) label for instruction
-    public void drawInstructionLabel() {
-        ImageIcon imageIcon = new ImageIcon("Images/cropped_blue_question_mark.png");
-        // Get the image from the imageIcon
-        Image image = imageIcon.getImage();
-        // Resize the image
-        Image newImage = image.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
-        imageIcon = new ImageIcon(newImage);
-
-        System.out.println(imageIcon.getIconHeight() + " " + imageIcon.getIconWidth());
-        instructionLabel = new JLabel(imageIcon);
-        instructionLabel.setSize(imageIcon.getIconHeight(), imageIcon.getIconWidth());
-        instructionLabel.setLocation(frame.getWidth() - 40, 5);;
-        frame.add(instructionLabel);
-    }
-
 
     // Add the main (game) buttons
     public void drawTileButtons() {
@@ -114,6 +99,41 @@ public class GUI {
                 frame.add(tileButtons[row][col]);
             }
         }
+    }
+
+
+    // Add Instruction (question mark: ?) label for instruction
+    public void drawInstructionButton() {
+        ImageIcon imageIcon = new ImageIcon("Images/cropped_blue_question_mark.png");
+        // Get the image from the imageIcon
+        Image image = imageIcon.getImage();
+        // Resize the image
+        Image newImage = image.getScaledInstance(20, 20, Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(newImage);
+
+        // Create the label to add the imageIcon
+        instructionButton = new JButton(imageIcon);
+        instructionButton.setSize(imageIcon.getIconHeight(), imageIcon.getIconWidth());
+        instructionButton.setLocation(frame.getWidth() - 40, 5);
+        // Make the button round and does not have rectangular shape
+        instructionButton.setContentAreaFilled(false);
+        // Hide the black rectangle when clicking the button
+        instructionButton.setBorderPainted(false);
+
+        // Add ActionListener to the instructionButton
+        instructionButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                JFrame instructionFrame = new JFrame("Instruction");
+                instructionFrame.setSize(500, 700);
+                instructionFrame.setResizable(false);
+                instructionFrame.setLayout(null);
+                instructionFrame.setBackground(Color.white);
+                instructionFrame.setVisible(true);
+                instructionFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            }
+        });
+
+        frame.add(instructionButton);
     }
 
 
@@ -282,7 +302,7 @@ public class GUI {
     }
 
 
-    // ******************** PRIVATE METHODS *********************
+    // ************* PRIVATE METHODS AND CLASSES ****************
     // Private method to set the color of the main (game) buttons
     private void setSquareButtonBackgroundCol(int row, int col) {
         if (Board.getBoard(row, col).isLightOn()) {
