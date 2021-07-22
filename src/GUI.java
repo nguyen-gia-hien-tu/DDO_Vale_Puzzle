@@ -128,24 +128,61 @@ public class GUI {
                 instructionFrame.setSize(500, 700);
 
                 // Add a panel
-                JPanel panel = new JPanel(new BorderLayout());
+                JPanel panel = new JPanel();
+                panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
 
                 // Add a welcome to the instructionFrame
                 JLabel welcomeInstructLabel = new JLabel("Welcome to the DDO Vale Puzzle");
                 welcomeInstructLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
-                welcomeInstructLabel.setLocation(10, 10);
-                panel.add(welcomeInstructLabel, BorderLayout.CENTER);
+                welcomeInstructLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(welcomeInstructLabel);
 
                 // Add "Instruction" text to the instructionFrame
                 JLabel instructionLabel = new JLabel("Instruction");
                 instructionLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
-                instructionLabel.setSize(200, 50);
-                instructionLabel.setLocation(100, 100);
-                panel.add(instructionLabel, BorderLayout.PAGE_LEFT);
+                instructionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(instructionLabel);
+
+                // Add the instruction
+                // String instructionText = "The goal of the puzzle is to turn all the tiles' lights" +
+                //                          "of the board on. The light of the tile is on if the tile" +
+                //                          "background color is cyan and the light of the tile is off" +
+                //                          "if its background color is light gray";
+                String instructionText = "<html>" +
+                                         "&nbsp The goal of the puzzle is to turn all the tiles\' lights of the board on." +
+                                         "<br>" +
+                                         "&nbsp The light of the tile is on if the tile background color is cyan " +
+                                            "and the light of the tile is off if its background color is light gray." +
+                                         "<br>" +
+                                         "&nbsp When clicking a tile, you will flip the light state (color) of that tile " +
+                                            "and the light state of the tiles that are horizontally and " +
+                                            "vertically adjacent to the current tile." +
+                                         "<br>" +
+                                         "&nbsp Flipping the light state of a tile means that if the current light state " +
+                                            "of a tile is on, flipping the light state will turn it off " +
+                                            "and vice versa." +
+                                         "<br>" +
+                                         "&nbsp Click on the \"New Game\" button to create a new board." +
+                                         "<br>" +
+                                         "&nbsp Click on the \"Edit\" button to edit the light state of a tile. " +
+                                            "\"Edit\" button will only flip the light state of the tile " +
+                                            "being clicked and does not flip the adjacent tiles' light states." +
+                                         "<br>" +
+                                         "&nbsp Click on the \"Play\" button to continue playing after editing." +
+                                         "<br>" +
+                                         "&nbsp Click on the \"Solve\" button to get the moves needed to solve the board. " +
+                                            "The number on the tile that needs clicking to solve the board " +
+                                            "will be colored red." +
+                                         "</html>";
+                JLabel instruction = new JLabel(instructionText);
+                instruction.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 20));
+                instruction.setAlignmentX(Component.CENTER_ALIGNMENT);
+                panel.add(instruction);
+
 
                 // Close the instructionFrame
+                instructionFrame.add(panel);
                 instructionFrame.setResizable(false);
-                instructionFrame.setLayout(null);
                 instructionFrame.setBackground(Color.white);
                 instructionFrame.setVisible(true);
                 instructionFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
