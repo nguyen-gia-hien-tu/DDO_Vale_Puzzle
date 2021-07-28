@@ -2,9 +2,7 @@ package src;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.*;
 import javax.swing.*;
-import javax.swing.border.*;
 
 import DDO_Solver.MultipleBoard;
 import DDO_Solver.Solver;
