@@ -4,9 +4,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import DDO_Solver.MultipleBoard;
-import DDO_Solver.Solver;
-
 
 /**
  * GUI

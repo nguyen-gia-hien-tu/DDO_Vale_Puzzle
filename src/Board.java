@@ -1,7 +1,5 @@
 package src;
 
-import DDO_Solver.Solver;
-
 /**
  * Model Board
  */
