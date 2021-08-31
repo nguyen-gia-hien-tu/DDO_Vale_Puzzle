@@ -1,1 +1,3 @@
 *.class
+**/DDO_Solver_Test/
+**/GUI_Demo/
